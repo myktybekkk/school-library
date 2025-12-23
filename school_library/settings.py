@@ -112,10 +112,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Для безопасного embed PDF (если нужно iframe)
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
-# ===== Авто-админ (настройки) =====
-# В проде (DEBUG=0) создастся admin/admin12345, если включить флаг.
-# На Render поставим AUTO_CREATE_SUPERUSER=1
-AUTO_CREATE_SUPERUSER = os.environ.get("AUTO_CREATE_SUPERUSER", "0") == "1"
-AUTO_SUPERUSER_USERNAME = os.environ.get("AUTO_SUPERUSER_USERNAME", "admin")
-AUTO_SUPERUSER_PASSWORD = os.environ.get("AUTO_SUPERUSER_PASSWORD", "admin12345")
-AUTO_SUPERUSER_EMAIL = os.environ.get("AUTO_SUPERUSER_EMAIL", "admin@example.com")
