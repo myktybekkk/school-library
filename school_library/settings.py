@@ -3,6 +3,14 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
+DEBUG = os.environ.get("DEBUG", "0") == "1"
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 SECRET_KEY = "django-insecure-6!m#1m2qf8d_8k9xq2u*9r9xv0f0^o4g1x9h7c3p4z1p8a"
 DEBUG = True
 
@@ -82,6 +90,11 @@ LOGIN_REDIRECT_URL = "book_list"
 LOGOUT_REDIRECT_URL = "login"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+CSRF_TRUSTED_ORIGINS = (
+    os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if os.environ.get("CSRF_TRUSTED_ORIGINS")
+    else []
+)
 
 # Для безопасного embed PDF (если нужно в iframe)
 X_FRAME_OPTIONS = "SAMEORIGIN"
