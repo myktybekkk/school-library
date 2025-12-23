@@ -1,25 +1,23 @@
 from pathlib import Path
 import os
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ===== Security / Env =====
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
+# Если хочешь, чтобы CSRF не ругался в проде
+# Пример: CSRF_TRUSTED_ORIGINS=https://rysbaikonkoshev-lib.onrender.com,https://rysbaikonkoshev-lib.onrender.com
+CSRF_TRUSTED_ORIGINS = (
+    os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if os.environ.get("CSRF_TRUSTED_ORIGINS")
+    else []
+)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = "django-insecure-6!m#1m2qf8d_8k9xq2u*9r9xv0f0^o4g1x9h7c3p4z1p8a"
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
-
+# ===== Apps =====
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -27,11 +25,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "library",
-    'cloudinary',
-    'cloudinary_storage',
+
+    # ВАЖНО: подключаем AppConfig (нужно для авто-суперпользователя)
+    "library.apps.LibraryConfig",
+
+    "cloudinary",
+    "cloudinary_storage",
 ]
 
+# ===== Middleware =====
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -64,6 +66,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "school_library.wsgi.application"
 ASGI_APPLICATION = "school_library.asgi.application"
 
+# ===== DB =====
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -71,6 +74,7 @@ DATABASES = {
     }
 }
 
+# ===== Password validators =====
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -78,52 +82,40 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# ===== Locale =====
 LANGUAGE_CODE = "ru"
 TIME_ZONE = "Asia/Bishkek"
 USE_I18N = True
 USE_TZ = True
 
+# ===== Static =====
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# ===== Media via Cloudinary =====
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
+# ===== Auth redirects =====
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "book_list"
 LOGOUT_REDIRECT_URL = "login"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-CSRF_TRUSTED_ORIGINS = (
-    os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
-    if os.environ.get("CSRF_TRUSTED_ORIGINS")
-    else []
-)
 
-# Для безопасного embed PDF (если нужно в iframe)
+# Для безопасного embed PDF (если нужно iframe)
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
-# === TEMP AUTO SUPERUSER (REMOVE AFTER FIRST LOGIN) ===
-if not DEBUG:
-    try:
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-
-        if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser(
-                username="admin",
-                password="admin12345",
-                email="admin@example.com"
-            )
-            print("SUPERUSER CREATED: admin / admin12345")
-    except Exception as e:
-        print("Superuser creation skipped:", e)
-    
+# ===== Авто-админ (настройки) =====
+# В проде (DEBUG=0) создастся admin/admin12345, если включить флаг.
+# На Render поставим AUTO_CREATE_SUPERUSER=1
+AUTO_CREATE_SUPERUSER = os.environ.get("AUTO_CREATE_SUPERUSER", "0") == "1"
+AUTO_SUPERUSER_USERNAME = os.environ.get("AUTO_SUPERUSER_USERNAME", "admin")
+AUTO_SUPERUSER_PASSWORD = os.environ.get("AUTO_SUPERUSER_PASSWORD", "admin12345")
+AUTO_SUPERUSER_EMAIL = os.environ.get("AUTO_SUPERUSER_EMAIL", "admin@example.com")
