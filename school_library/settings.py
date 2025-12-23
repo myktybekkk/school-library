@@ -110,3 +110,20 @@ CSRF_TRUSTED_ORIGINS = (
 
 # Для безопасного embed PDF (если нужно в iframe)
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+# === TEMP AUTO SUPERUSER (REMOVE AFTER FIRST LOGIN) ===
+if not DEBUG:
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        if not User.objects.filter(username="admin").exists():
+            User.objects.create_superuser(
+                username="admin",
+                password="admin12345",
+                email="admin@example.com"
+            )
+            print("SUPERUSER CREATED: admin / admin12345")
+    except Exception as e:
+        print("Superuser creation skipped:", e)
+    
