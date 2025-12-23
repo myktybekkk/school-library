@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h2 class="mb-0">{{ book.title }}</h2>
+    <div class="text-muted small">
+      {% if book.author %}Автор: {{ book.author }} • {% endif %}
+      {% if book.grade %}{{ book.grade }} • {% endif %}
+      {% if book.subject %}{{ book.subject }}{% endif %}
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'book_list' %}">← Назад</a>
+    <a class="btn btn-primary" href="{{ book.pdf.url }}" target="_blank">Открыть в новой вкладке</a>
+    <a class="btn btn-outline-primary" href="{{ book.pdf.url }}" download>Скачать</a>
+
+    {% if is_teacher %}
+      <a class="btn btn-warning" href="{% url 'book_edit' book.pk %}">Редактировать</a>
+      <a class="btn btn-danger" href="{% url 'book_delete' book.pk %}">Удалить</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <p class="mb-2">{{ book.description|default:"Без описания" }}</p>
+    <div class="text-muted small">
+      Загружено: {{ book.uploaded_at|date:"d.m.Y H:i" }}
+      {% if book.uploaded_by %} • Автор загрузки: {{ book.uploaded_by.username }}{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="ratio ratio-16x9">
+      <iframe src="{{ book.pdf.url }}" title="PDF Viewer"></iframe>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

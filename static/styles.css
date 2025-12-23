@@ -1,0 +1,18 @@
+body {
+  background: #f6f7fb;
+}
+
+.card {
+  border-radius: 16px;
+}
+
+.navbar-brand {
+  letter-spacing: 0.2px;
+}
+
+.card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
