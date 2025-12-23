@@ -1,69 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
+<h2 class="mb-3">Книги</h2>
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-  <div>
-    <h2 class="mb-0">Каталог книг</h2>
-    <div class="text-muted small">Читай PDF прямо на сайте</div>
-  </div>
-
-  {% if is_teacher %}
-    <a class="btn btn-success" href="{% url 'book_create' %}">+ Добавить книгу (PDF)</a>
-  {% endif %}
-</div>
-
-<div class="card shadow-sm mb-4">
-  <div class="card-body">
-    <form method="get" class="row g-2">
-      <div class="col-md-6">
-        <input class="form-control" name="q" value="{{ q }}" placeholder="Поиск: название, автор, описание">
+<div class="list-group">
+  {% for b in books %}
+    <a class="list-group-item list-group-item-action" href="{% url 'book_detail' b.pk %}">
+      <div class="d-flex justify-content-between">
+        <strong>{{ b.title }}</strong>
+        <small class="text-muted">{{ b.uploaded_at|date:"d.m.Y H:i" }}</small>
       </div>
-
-      <div class="col-md-3">
-        <input class="form-control" name="subject" value="{{ subject }}" list="subjects" placeholder="Предмет">
-        <datalist id="subjects">
-          {% for s in subjects %}<option value="{{ s }}">{% endfor %}
-        </datalist>
+      <div class="text-muted small">
+        {% if b.author %}{{ b.author }} • {% endif %}
+        {% if b.grade %}{{ b.grade }} • {% endif %}
+        {% if b.subject %}{{ b.subject }}{% endif %}
       </div>
-
-      <div class="col-md-2">
-        <input class="form-control" name="grade" value="{{ grade }}" list="grades" placeholder="Класс">
-        <datalist id="grades">
-          {% for g in grades %}<option value="{{ g }}">{% endfor %}
-        </datalist>
-      </div>
-
-      <div class="col-md-1 d-grid">
-        <button class="btn btn-primary">Найти</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="row g-3">
-  {% for book in books %}
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">{{ book.title }}</h5>
-          <div class="text-muted small mb-2">
-            {% if book.author %}Автор: {{ book.author }}{% endif %}
-            {% if book.grade %}<span class="badge text-bg-light ms-1">{{ book.grade }}</span>{% endif %}
-            {% if book.subject %}<span class="badge text-bg-light ms-1">{{ book.subject }}</span>{% endif %}
-          </div>
-          <p class="card-text text-muted">{{ book.description|default:"Без описания" }}</p>
-        </div>
-        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-          <a class="btn btn-outline-primary btn-sm" href="{% url 'book_detail' book.pk %}">Открыть</a>
-          <span class="text-muted small">{{ book.uploaded_at|date:"d.m.Y" }}</span>
-        </div>
-      </div>
-    </div>
+    </a>
   {% empty %}
-    <div class="col-12">
-      <div class="alert alert-warning shadow-sm">Ничего не найдено.</div>
-    </div>
+    <div class="alert alert-info">Пока нет книг.</div>
   {% endfor %}
 </div>
-
 {% endblock %}

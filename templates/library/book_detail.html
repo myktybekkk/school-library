@@ -13,8 +13,11 @@
 
   <div class="d-flex gap-2">
     <a class="btn btn-outline-secondary" href="{% url 'book_list' %}">← Назад</a>
-    <a class="btn btn-primary" href="{{ book.pdf.url }}" target="_blank">Открыть в новой вкладке</a>
-    <a class="btn btn-outline-primary" href="{{ book.pdf.url }}" download>Скачать</a>
+
+    {% if book.pdf %}
+      <a class="btn btn-primary" href="{{ book.pdf_view_url }}" target="_blank" rel="noopener">Открыть в новой вкладке</a>
+      <a class="btn btn-outline-primary" href="{{ book.pdf_download_url }}">Скачать</a>
+    {% endif %}
 
     {% if is_teacher %}
       <a class="btn btn-warning" href="{% url 'book_edit' book.pk %}">Редактировать</a>
@@ -33,12 +36,16 @@
   </div>
 </div>
 
-<div class="card shadow-sm">
-  <div class="card-body">
-    <div class="ratio ratio-16x9">
-      <iframe src="{{ book.pdf.url }}" title="PDF Viewer"></iframe>
+{% if book.pdf %}
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="ratio ratio-16x9">
+        <iframe src="{{ book.pdf_view_url }}" title="PDF Viewer"></iframe>
+      </div>
     </div>
   </div>
-</div>
+{% else %}
+  <div class="alert alert-warning">PDF файл не прикреплён.</div>
+{% endif %}
 
 {% endblock %}

@@ -6,9 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ===== Security / Env =====
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.environ.get("DEBUG", "0") == "1"
-
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
-
 # Если хочешь, чтобы CSRF не ругался в проде
 # Пример: CSRF_TRUSTED_ORIGINS=https://rysbaikonkoshev-lib.onrender.com,https://rysbaikonkoshev-lib.onrender.com
 CSRF_TRUSTED_ORIGINS = (
@@ -25,13 +23,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    # ВАЖНО: подключаем AppConfig (нужно для авто-суперпользователя)
-    "library.apps.LibraryConfig",
+    "library",
 
     "cloudinary",
     "cloudinary_storage",
 ]
+
 
 # ===== Middleware =====
 MIDDLEWARE = [
@@ -94,12 +91,14 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+
 # ===== Media via Cloudinary =====
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
     "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
     "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
+
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # ===== Auth redirects =====
