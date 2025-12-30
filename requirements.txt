@@ -6,3 +6,5 @@ django-cloudinary-storage
 Pillow==10.4.0
 cloudinary==1.41.0
 django-cloudinary-storage==0.3.0
+dj-database-url
+psycopg2-binary
